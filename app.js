@@ -1,0 +1,34 @@
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const loginRoutes = require('./apis/routes/loginRoutes');
+const userRoutes = require('./apis/routes/userRoutes');
+const contactRoutes = require('./apis/routes/contactsRoutes');
+const app = express();
+app.use(cors());
+
+mongoose.connect(`mongodb+srv://saurabhsolanki:ldmCrql1x1TbWJ3C@cluster0.x0iofqd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`)
+    .then(() => {
+        console.log("MongoDB Connected");
+    })
+    .catch(err => {
+        console.log(err);
+    });
+
+app.use('/login', loginRoutes);
+app.use('/users', userRoutes);
+app.use('/contacts', contactRoutes);
+
+app.use((req, res, next) => {
+    const error = new Error('404 not found');
+    error.status = 404;
+    next(error);
+})
+
+app.use((error, req, res, next) => {
+    res.status(error.status || 500).json({
+        message: error.message
+    })
+})
+
+module.exports = app;
