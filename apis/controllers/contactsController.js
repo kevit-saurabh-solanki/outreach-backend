@@ -69,18 +69,21 @@ exports.edit_contact = (req, res, next) => {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
     Contacts.findOneAndUpdate({ phoneNumber: req.body.phoneNumber }, { $set: { name: name, tags: tags } }, { returnDocument: before }).exec()
-    .then(result => {
-        console.log("Contact edited successfully");
-        res.status(200).json({ 
-            edit_name: result.name,
-            edit_tags: result.tags,
-            edit_phoneNumber: result.phoneNumber
+        .then(result => {
+            if (result === null) {
+                return res.status(404).json({ message: "No contacts found" });
+            }
+            console.log("Contact edited successfully");
+            res.status(200).json({
+                edit_name: result.name,
+                edit_tags: result.tags,
+                edit_phoneNumber: result.phoneNumber
+            })
         })
-    })
-    .catch(err => {
-        console.log(err)
-        res.status(500).json({ error: err });
-    })
+        .catch(err => {
+            console.log(err)
+            res.status(500).json({ error: err });
+        })
 }
 
 //delete contact
@@ -90,16 +93,16 @@ exports.delete_contact = (req, res, next) => {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
     Contacts.findOneAndDelete({ phoneNumber: req.body.phoneNumber }, { returnDocument: before }).exec()
-    .then(result => {
-        console.log("Contact deleted successfully");
-        res.status(200).json({ 
-            delete_name: result.name,
-            delete_tags: result.tags,
-            delete_phoneNumber: result.phoneNumber
+        .then(result => {
+            console.log("Contact deleted successfully");
+            res.status(200).json({
+                delete_name: result.name,
+                delete_tags: result.tags,
+                delete_phoneNumber: result.phoneNumber
+            })
         })
-    })
-    .catch(err => {
-        console.log(err)
-        res.status(500).json({ error: err });
-    })
+        .catch(err => {
+            console.log(err)
+            res.status(500).json({ error: err });
+        })
 }
