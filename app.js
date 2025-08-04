@@ -6,6 +6,8 @@ const userRoutes = require('./apis/routes/userRoutes');
 const contactRoutes = require('./apis/routes/contactsRoutes');
 const app = express();
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 mongoose.connect(`mongodb+srv://saurabhsolanki:ldmCrql1x1TbWJ3C@cluster0.x0iofqd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`)
     .then(() => {

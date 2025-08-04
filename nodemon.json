@@ -1,5 +1,6 @@
 {
     "env": {
-        "MONGO_PW": "ldmCrql1x1TbWJ3C"
+        "MONGO_PW": "ldmCrql1x1TbWJ3C",
+        "JWT_KEY": "secret"
     }
 }
