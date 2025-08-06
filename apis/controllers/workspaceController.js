@@ -33,7 +33,7 @@ exports.create_workspace = (req, res, next) => {
 //fetch all workspace
 exports.fetch_all_workspace = (req, res, next) => {
     const admin = req.userData.isAdmin;
-    if (admin) {
+    if (!admin) {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
     Workspace.find().exec()
@@ -52,7 +52,7 @@ exports.fetch_all_workspace = (req, res, next) => {
 //delete workspace
 exports.delete_workspace = (req, res, next) => {
     const admin = req.userData.isAdmin;
-    if (admin) {
+    if (!admin) {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
     Workspace.findOne({ _id: req.body.id }).exec()

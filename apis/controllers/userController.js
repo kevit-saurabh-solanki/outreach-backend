@@ -4,6 +4,10 @@ const bcrypt = require('bcrypt')
 
 //fetch all users
 exports.all_user_fetch = (req, res, next) => {
+    const isAdmin = req.userData.isAdmin;
+    if (!isAdmin) {
+        return res.status(401).json({ message: "Unauthorized access" });
+    }
     WorkspaceUser.find().exec()
         .then(result => {
             console.log('All users fetched successfully')
@@ -29,6 +33,10 @@ exports.all_user_fetch = (req, res, next) => {
 
 //fetch user by email
 exports.single_user_fetch = (req, res, next) => {
+    const isAdmin = req.userData.isAdmin;
+    if (!isAdmin) {
+        return res.status(401).json({ message: "Unauthorized access" });
+    }
     const email = req.params.email;
     WorkspaceUser.findOne({ email: email }).exec()
         .then(result => {
@@ -97,6 +105,10 @@ exports.add_user = (req, res, next) => {
 
 //delete user
 exports.delete_user = (req, res, next) => {
+    const isAdmin = req.userData.isAdmin;
+    if (!isAdmin) {
+        return res.status(401).json({ message: "Unauthorized access" });
+    }
     const email = req.body.email;
     WorkspaceUser.findOneAndDelete({ email: email }).exec()
         .then(result => {
@@ -123,6 +135,10 @@ exports.delete_user = (req, res, next) => {
 
 //edit user
 exports.edit_user = (req, res, next) => {
+    const isAdmin = req.userData.isAdmin;
+    if (!isAdmin) {
+        return res.status(401).json({ message: "Unauthorized access" });
+    }
     const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;

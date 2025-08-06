@@ -9,10 +9,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+require('dotenv').config();
 
-mongoose.connect(`mongodb+srv://saurabhsolanki:ldmCrql1x1TbWJ3C@cluster0.x0iofqd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`)
+
+mongoose.connect("mongodb+srv://saurabhsolanki:" + process.env.MONGO_URL + "@cluster0.x0iofqd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
     .then(() => {
-        console.log("MongoDB Connected");
+        console.log("MongoDB connected");
     })
     .catch(err => {
         console.log(err);

@@ -16,3 +16,11 @@ const userSchema = mongoose.Schema({
 });
 
 module.exports = mongoose.model('WorkspaceUser', userSchema)
+
+// {
+//   "username": "Saurabh"
+//   "email": "saurabh@kevit.io",
+//   "password": "saurabh123",
+//   "role": "editor",
+//   "isAdmin": "true"
+// }
