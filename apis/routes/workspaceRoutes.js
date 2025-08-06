@@ -10,9 +10,9 @@ router.post('/', reqAuth, workspaceController.create_workspace);
 router.get('/', reqAuth, workspaceController.fetch_all_workspace);
 
 //delete workspace
-router.delete('/', reqAuth, workspaceController.delete_workspace);
+router.delete('/:workspaceId', reqAuth, workspaceController.delete_workspace);
 
 //edit workspace
-router.put('/', reqAuth, workspaceController.edit_workspace);
+router.put('/:workspaceId', reqAuth, workspaceController.edit_workspace);
 
 module.exports = router;

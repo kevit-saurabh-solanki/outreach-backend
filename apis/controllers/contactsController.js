@@ -68,7 +68,7 @@ exports.edit_contact = (req, res, next) => {
     if (role === 'viewer') {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
-    Contacts.findOneAndUpdate({ phoneNumber: req.body.phoneNumber }, { $set: { name: name, tags: tags } }, { returnDocument: before }).exec()
+    Contacts.findOneAndUpdate({ _id: req.params.contactId }, { $set: { name: name, tags: tags } }, { returnDocument: before }).exec()
         .then(result => {
             if (result === null) {
                 return res.status(404).json({ message: "No contacts found" });
@@ -92,7 +92,7 @@ exports.delete_contact = (req, res, next) => {
     if (role === 'viewer') {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
-    Contacts.findOneAndDelete({ phoneNumber: req.body.phoneNumber }, { returnDocument: before }).exec()
+    Contacts.findOneAndDelete({ _id: req.params.contactId }, { returnDocument: before }).exec()
         .then(result => {
             console.log("Contact deleted successfully");
             res.status(200).json({

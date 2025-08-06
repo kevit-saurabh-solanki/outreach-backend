@@ -4,8 +4,8 @@ const mongoose = require('mongoose');
 
 //create workspace
 exports.create_workspace = (req, res, next) => {
-    const role = req.userData.role;
-    if (role !== "admin") {
+    const admin = req.userData.isAdmin;
+    if (!admin) {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
     const workspace = new Workspace({
@@ -32,6 +32,10 @@ exports.create_workspace = (req, res, next) => {
 
 //fetch all workspace
 exports.fetch_all_workspace = (req, res, next) => {
+    const admin = req.userData.isAdmin;
+    if (!admin) {
+        return res.status(401).json({ message: "Unauthorized Access" });
+    }
     Workspace.find().exec()
         .then(result => {
             console.log('All workspaces fetched');
@@ -47,16 +51,16 @@ exports.fetch_all_workspace = (req, res, next) => {
 
 //delete workspace
 exports.delete_workspace = (req, res, next) => {
-    const role = req.userData.role;
-    if (role !== "admin") {
+    const admin = req.userData.isAdmin;
+    if (!admin) {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
-    Workspace.findOne({ _id: req.body.id }).exec()
+    Workspace.findOne({ _id: req.params.workspaceId }).exec()
         .then(result => {
             if (result === null) {
                 return res.status(404).json({ message: "No workspace found" });
             }
-            Workspace.deleteOne({ _id: req.body.id }).exec()
+            Workspace.deleteOne({ _id: req.params.workspaceId }).exec()
                 .then(delWork => {
                     console.log('workspace deleted');
                     res.status(200).json({ deleted_workspace: result.name });
@@ -74,12 +78,12 @@ exports.delete_workspace = (req, res, next) => {
 
 //edit workspace
 exports.edit_workspace = (req, res, next) => {
-    const role = req.userData.role;
-    if (role !== "admin") {
+    const admin = req.userData.isAdmin;
+    if (!admin) {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
 
-    Workspace.findOneAndUpdate({ _id: req.body.id }, { $set: { name: req.body.name, description: req.body.description } }, { returnDocument: before }).exec()
+    Workspace.findOneAndUpdate({ _id: req.params.workspaceId }, { $set: { name: req.body.name, description: req.body.description } }, { returnDocument: before }).exec()
         .then(result => {
             if (result === null) {
                 return res.status(404).json({ message: "No workspace found" });

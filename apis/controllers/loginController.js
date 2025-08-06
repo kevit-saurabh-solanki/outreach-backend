@@ -22,6 +22,7 @@ exports.login_user = (req, res, next) => {
                             email: result.email,
                             role: result.role,
                             workspace_id: result.workspace_id,
+                            isAdmin: result.isAdmin,
                             createdAt: result.createdAt
                         },
                         process.env.JWT_KEY,
