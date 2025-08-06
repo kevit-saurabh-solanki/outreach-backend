@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const loginRoutes = require('./apis/routes/loginRoutes');
 const userRoutes = require('./apis/routes/userRoutes');
 const contactRoutes = require('./apis/routes/contactsRoutes');
+const workspaceRoutes = require('./apis/routes/workspaceRoutes');
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -20,6 +21,7 @@ mongoose.connect(`mongodb+srv://saurabhsolanki:ldmCrql1x1TbWJ3C@cluster0.x0iofqd
 app.use('/login', loginRoutes);
 app.use('/users', userRoutes);
 app.use('/contacts', contactRoutes);
+app.use('/workspace', workspaceRoutes);
 
 app.use((req, res, next) => {
     const error = new Error('404 not found');

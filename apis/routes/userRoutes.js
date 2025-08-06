@@ -8,6 +8,9 @@ router.get('/', userController.all_user_fetch);
 //single user fetch
 router.get('/:email', userController.single_user_fetch);
 
+//add user
+router.post('/', userController.add_user);
+
 //edit user
 router.put('/', userController.edit_user);
 

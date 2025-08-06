@@ -1,8 +1,10 @@
-const User = require('../models/userModel');
+const WorkspaceUser = require('../models/userModel');
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt')
 
 //fetch all users
 exports.all_user_fetch = (req, res, next) => {
-    User.find().exec()
+    WorkspaceUser.find().exec()
         .then(result => {
             console.log('All users fetched successfully')
             res.status(200).json({
@@ -28,7 +30,7 @@ exports.all_user_fetch = (req, res, next) => {
 //fetch user by email
 exports.single_user_fetch = (req, res, next) => {
     const email = req.params.email;
-    User.findOne({ email: email }).exec()
+    WorkspaceUser.findOne({ email: email }).exec()
         .then(result => {
             if (result) {
                 console.log("User fetched");
@@ -52,10 +54,51 @@ exports.single_user_fetch = (req, res, next) => {
         })
 };
 
+//add users
+exports.add_user = (req, res, next) => {
+    const isAdmin = req.userData.isAdmin;
+    if (!isAdmin) {
+        return res.status(401).json({ message: "Unauthorized access" });
+    }
+    bcrypt.hash(req.body.password, 10, (e, hash) => {
+        if (e) {
+            console.log(e);
+            return res.status(500).json({
+                error: e
+            });
+        }
+        else {
+            const user = new WorkspaceUser({
+                _id: new mongoose.Types.ObjectId(),
+                username: req.body.username,
+                email: req.body.email,
+                password: hash,
+                role: req.body.role,
+                workspace_id: req.body.workspace_id,
+                isAdmin: req.body.isAdmin,
+                createdAt: new Date().toISOString()
+            });
+            user.save()
+                .then(result => {
+                    console.log("user added successfully");
+                    res.status(200).json({
+                        message: result
+                    })
+                })
+                .catch(err => {
+                    console.log(err);
+                    res.status(500).json({ error: err });
+                })
+        }
+    })
+
+}
+
+
 //delete user
 exports.delete_user = (req, res, next) => {
     const email = req.body.email;
-    User.findOneAndDelete({ email: email }).exec()
+    WorkspaceUser.findOneAndDelete({ email: email }).exec()
         .then(result => {
             if (result) {
                 console.log("User deleted");
@@ -85,7 +128,7 @@ exports.edit_user = (req, res, next) => {
     const password = req.body.password;
     const role = req.body.role;
     const workspace_id = req.body.workspace_id;
-    User.findOneAndUpdate({ email: email }, { $set: { username: username, email: email, password: password, role: role, workspace_id: workspace_id  } }, { returnDocument: after }).exec()
+    WorkspaceUser.findOneAndUpdate({ email: email }, { $set: { username: username, email: email, password: password, role: role, workspace_id: workspace_id } }, { returnDocument: after }).exec()
         .then(result => {
             console.log("User updated");
             if (result) {

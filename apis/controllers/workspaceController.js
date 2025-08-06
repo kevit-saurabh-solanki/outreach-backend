@@ -4,8 +4,8 @@ const mongoose = require('mongoose');
 
 //create workspace
 exports.create_workspace = (req, res, next) => {
-    const role = req.userData.role;
-    if (role !== "admin") {
+    const admin = req.userData.isAdmin;
+    if (!admin) {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
     const workspace = new Workspace({
@@ -32,6 +32,10 @@ exports.create_workspace = (req, res, next) => {
 
 //fetch all workspace
 exports.fetch_all_workspace = (req, res, next) => {
+    const admin = req.userData.isAdmin;
+    if (admin) {
+        return res.status(401).json({ message: "Unauthorized Access" });
+    }
     Workspace.find().exec()
         .then(result => {
             console.log('All workspaces fetched');
@@ -47,8 +51,8 @@ exports.fetch_all_workspace = (req, res, next) => {
 
 //delete workspace
 exports.delete_workspace = (req, res, next) => {
-    const role = req.userData.role;
-    if (role !== "admin") {
+    const admin = req.userData.isAdmin;
+    if (admin) {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
     Workspace.findOne({ _id: req.body.id }).exec()
@@ -74,8 +78,8 @@ exports.delete_workspace = (req, res, next) => {
 
 //edit workspace
 exports.edit_workspace = (req, res, next) => {
-    const role = req.userData.role;
-    if (role !== "admin") {
+    const admin = req.userData.role;
+    if (!admin) {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
 
