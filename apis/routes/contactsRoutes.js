@@ -10,9 +10,9 @@ router.get('/', checkAuth, contactsController.fetch_all_contacts);
 router.post('/', checkAuth, contactsController.add_contact);
 
 //edit contacts
-router.put('/', checkAuth, contactsController.edit_contact);
+router.put('/:contactId', checkAuth, contactsController.edit_contact);
 
 //delete contacts
-router.delete('/', checkAuth, contactsController.delete_contact);
+router.delete('/:contactId', checkAuth, contactsController.delete_contact);
 
 module.exports = router;

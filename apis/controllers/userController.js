@@ -4,9 +4,9 @@ const bcrypt = require('bcrypt')
 
 //fetch all users
 exports.all_user_fetch = (req, res, next) => {
-    const isAdmin = req.userData.isAdmin;
-    if (!isAdmin) {
-        return res.status(401).json({ message: "Unauthorized access" });
+    const admin = req.userData.isAdmin;
+    if (!admin) {
+        return res.status(401).json({ message: "Unauthorized Access" });
     }
     WorkspaceUser.find().exec()
         .then(result => {
@@ -31,14 +31,13 @@ exports.all_user_fetch = (req, res, next) => {
         })
 };
 
-//fetch user by email
+//fetch user by id
 exports.single_user_fetch = (req, res, next) => {
-    const isAdmin = req.userData.isAdmin;
-    if (!isAdmin) {
-        return res.status(401).json({ message: "Unauthorized access" });
+    const admin = req.userData.isAdmin;
+    if (!admin) {
+        return res.status(401).json({ message: "Unauthorized Access" });
     }
-    const email = req.params.email;
-    WorkspaceUser.findOne({ email: email }).exec()
+    WorkspaceUser.findOne({ _id: req.params.userId }).exec()
         .then(result => {
             if (result) {
                 console.log("User fetched");
@@ -51,7 +50,7 @@ exports.single_user_fetch = (req, res, next) => {
                 });
             }
             else {
-                res.status(404).json({ message: "User with specified mail not found" })
+                res.status(404).json({ message: "User with specified id not found" })
             }
         })
         .catch(err => {
@@ -64,9 +63,9 @@ exports.single_user_fetch = (req, res, next) => {
 
 //add users
 exports.add_user = (req, res, next) => {
-    const isAdmin = req.userData.isAdmin;
-    if (!isAdmin) {
-        return res.status(401).json({ message: "Unauthorized access" });
+    const admin = req.userData.isAdmin;
+    if (!admin) {
+        return res.status(401).json({ message: "Unauthorized Access" });
     }
     bcrypt.hash(req.body.password, 10, (e, hash) => {
         if (e) {
@@ -90,7 +89,10 @@ exports.add_user = (req, res, next) => {
                 .then(result => {
                     console.log("user added successfully");
                     res.status(200).json({
-                        message: result
+                        username: result.username,
+                        email: result.email,
+                        password: result.password,
+                        role: result.role
                     })
                 })
                 .catch(err => {
@@ -105,12 +107,11 @@ exports.add_user = (req, res, next) => {
 
 //delete user
 exports.delete_user = (req, res, next) => {
-    const isAdmin = req.userData.isAdmin;
-    if (!isAdmin) {
-        return res.status(401).json({ message: "Unauthorized access" });
+    const admin = req.userData.isAdmin;
+    if (!admin) {
+        return res.status(401).json({ message: "Unauthorized Access" });
     }
-    const email = req.body.email;
-    WorkspaceUser.findOneAndDelete({ email: email }).exec()
+    WorkspaceUser.findOneAndDelete({ _id: req.params.userId }).exec()
         .then(result => {
             if (result) {
                 console.log("User deleted");
@@ -135,16 +136,16 @@ exports.delete_user = (req, res, next) => {
 
 //edit user
 exports.edit_user = (req, res, next) => {
-    const isAdmin = req.userData.isAdmin;
-    if (!isAdmin) {
-        return res.status(401).json({ message: "Unauthorized access" });
+    const admin = req.userData.isAdmin;
+    if (!admin) {
+        return res.status(401).json({ message: "Unauthorized Access" });
     }
     const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
     const role = req.body.role;
     const workspace_id = req.body.workspace_id;
-    WorkspaceUser.findOneAndUpdate({ email: email }, { $set: { username: username, email: email, password: password, role: role, workspace_id: workspace_id } }, { returnDocument: after }).exec()
+    WorkspaceUser.findOneAndUpdate({ _id: req.params.userId }, { $set: { username: username, email: email, password: password, role: role, workspace_id: workspace_id } }, { returnDocument: "after" }).exec()
         .then(result => {
             console.log("User updated");
             if (result) {
