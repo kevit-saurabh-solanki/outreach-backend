@@ -118,9 +118,6 @@ exports.delete_contact = (req, res, next) => {
 
 //fetch single contact-----------------------------------------------------------
 exports.fetch_single_contact = (req, res, next) => {
-    if (role === 'viewer') {
-        return res.status(401).json({ message: "Unauthorized Access" });
-    }
     Contacts.findOne({ _id: req.params.contactId }).exec()
         .then(result => {
             if (result) {
