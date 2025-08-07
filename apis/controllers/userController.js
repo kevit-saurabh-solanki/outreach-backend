@@ -2,7 +2,7 @@ const WorkspaceUser = require('../models/userModel');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
 
-//fetch all users
+//fetch all users-------------------------------------------------------------------------
 exports.all_user_fetch = (req, res, next) => {
     const admin = req.userData.isAdmin;
     if (!admin) {
@@ -31,7 +31,7 @@ exports.all_user_fetch = (req, res, next) => {
         })
 };
 
-//fetch user by id
+//fetch user by id-------------------------------------------------------------------------
 exports.single_user_fetch = (req, res, next) => {
     const admin = req.userData.isAdmin;
     if (!admin) {
@@ -61,12 +61,20 @@ exports.single_user_fetch = (req, res, next) => {
         })
 };
 
-//add users
+//add users-------------------------------------------------------------------------
 exports.add_user = (req, res, next) => {
     const admin = req.userData.isAdmin;
     if (!admin) {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
+    WorkspaceUser.findOne({ $and: [{ email: req.body.email }, { workspace_id: req.body.workspace_id }] }).exec()
+        .then(result => {
+            if (result) return res.status(409).json({ message: "user with specified mail and workspace id already existed" });
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({ error: err });
+        })
     bcrypt.hash(req.body.password, 10, (e, hash) => {
         if (e) {
             console.log(e);
@@ -105,7 +113,7 @@ exports.add_user = (req, res, next) => {
 }
 
 
-//delete user
+//delete user-------------------------------------------------------------------------
 exports.delete_user = (req, res, next) => {
     const admin = req.userData.isAdmin;
     if (!admin) {
@@ -134,7 +142,7 @@ exports.delete_user = (req, res, next) => {
         })
 }
 
-//edit user
+//edit user-------------------------------------------------------------------------
 exports.edit_user = (req, res, next) => {
     const admin = req.userData.isAdmin;
     if (!admin) {
