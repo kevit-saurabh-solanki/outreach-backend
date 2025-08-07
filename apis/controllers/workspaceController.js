@@ -1,36 +1,47 @@
 const Workspace = require('../models/workspaceModel');
-const mongoose = require('mongoose');
 
 
-//create workspace
+
+//create workspace-------------------------------------------------------------------------
 exports.create_workspace = (req, res, next) => {
     const admin = req.userData.isAdmin;
     if (!admin) {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
-    const workspace = new Workspace({
-        _id: new mongoose.Types.ObjectId(),
-        name: req.body.name,
-        description: req.body.description,
-        createdAt: new Date().toISOString()
-    });
-    workspace.save()
+    Workspace.findOne({ _id: req.body._id }).exec()
         .then(result => {
-            console.log('Workspace created');
-            res.status(200).json({
-                workspace_id: result._id,
-                workspace_name: result.name,
-                workspace_description: result.description,
-                createdAt: result.createdAt
+            if (result) return res.status(409).json({ message: "workspace already existed with specified id" });
+            const workspace = new Workspace({
+                _id: req.body._id,
+                name: req.body.name,
+                description: req.body.description,
+                createdAt: new Date().toISOString()
             });
+            workspace.save()
+                .then(result => {
+                    console.log('Workspace created');
+                    res.status(200).json({
+                        workspace_id: result._id,
+                        workspace_name: result.name,
+                        workspace_description: result.description,
+                        createdAt: result.createdAt
+                    });
+                })
+                .catch(err => {
+                    console.log(err);
+                    res.status(500).json({ error: err });
+                })
+
+
         })
         .catch(err => {
             console.log(err);
             res.status(500).json({ error: err });
         })
+
 }
 
-//fetch all workspace
+//fetch all workspace-------------------------------------------------------------------------
 exports.fetch_all_workspace = (req, res, next) => {
     const admin = req.userData.isAdmin;
     if (!admin) {
@@ -49,7 +60,7 @@ exports.fetch_all_workspace = (req, res, next) => {
         })
 }
 
-//delete workspace
+//delete workspace-------------------------------------------------------------------------
 exports.delete_workspace = (req, res, next) => {
     const admin = req.userData.isAdmin;
     if (!admin) {
@@ -63,7 +74,7 @@ exports.delete_workspace = (req, res, next) => {
             Workspace.deleteOne({ _id: req.params.workspaceId }).exec()
                 .then(delWork => {
                     console.log('workspace deleted');
-                    res.status(200).json({ deleted_workspace: result.name });
+                    res.status(200).json({ deleted_workspaceId: result._id, deleted_workspace: result.name });
                 })
                 .catch(err => {
                     console.log(err)
@@ -76,14 +87,14 @@ exports.delete_workspace = (req, res, next) => {
         })
 }
 
-//edit workspace
+//edit workspace-------------------------------------------------------------------------
 exports.edit_workspace = (req, res, next) => {
     const admin = req.userData.isAdmin;
     if (!admin) {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
 
-    Workspace.findOneAndUpdate({ _id: req.params.workspaceId }, { $set: { name: req.body.name, description: req.body.description } }, { returnDocument: before }).exec()
+    Workspace.findOneAndUpdate({ _id: req.params.workspaceId }, { $set: { name: req.body.name, description: req.body.description } }, { returnDocument: "after" }).exec()
         .then(result => {
             if (result === null) {
                 return res.status(404).json({ message: "No workspace found" });

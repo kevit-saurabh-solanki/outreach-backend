@@ -1,7 +1,7 @@
 const Contacts = require('../models/contactsModel');
 const { default: mongoose } = require('mongoose');
 
-//fetch all contacts
+//fetch all contacts-----------------------------------------------------------
 exports.fetch_all_contacts = (req, res, next) => {
     Contacts.find().exec()
         .then(result => {
@@ -25,17 +25,16 @@ exports.fetch_all_contacts = (req, res, next) => {
         })
 }
 
-//add contact
+//add contact-----------------------------------------------------------
 exports.add_contact = (req, res, next) => {
     const role = req.userData.role;
-    const workspace_id = req.userData.workspace_id;
     if (role === 'viewer') {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
     Contacts.findOne({ $and: [{ phoneNumber: req.body.phoneNumber }, { workspace_id: req.userData.workspace_id }] }).exec()
         .then(result => {
             if (result) {
-                res.status(401).json({ error: "Contact already exist" });
+                res.status(401).json({ error: "Contact with specified phone and workspace id already exist" });
             }
             else {
                 const contact = new Contacts({
@@ -49,7 +48,14 @@ exports.add_contact = (req, res, next) => {
                 contact.save()
                     .then(result => {
                         console.log("Contact added successfully");
-                        res.status(200).json({ message: "Contact added successfully" });
+                        res.status(200).json({
+                            contact_id: result._id,
+                            contact_name: result.name,
+                            contact_Number: result.phoneNumber,
+                            tags: result.tags,
+                            workspace_id: result.workspace_id,
+                            userId: result.createdBy
+                        });
                     })
                     .catch(err => {
                         console.log(err);
@@ -60,7 +66,7 @@ exports.add_contact = (req, res, next) => {
 
 }
 
-//edit contact
+//edit contact-----------------------------------------------------------
 exports.edit_contact = (req, res, next) => {
     const role = req.userData.role;
     const name = req.body.name;
@@ -68,7 +74,7 @@ exports.edit_contact = (req, res, next) => {
     if (role === 'viewer') {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
-    Contacts.findOneAndUpdate({ _id: req.params.contactId }, { $set: { name: name, tags: tags } }, { returnDocument: before }).exec()
+    Contacts.findOneAndUpdate({ _id: req.params.contactId }, { $set: { name: name, tags: tags } }, { returnDocument: "after" }).exec()
         .then(result => {
             if (result === null) {
                 return res.status(404).json({ message: "No contacts found" });
@@ -77,7 +83,7 @@ exports.edit_contact = (req, res, next) => {
             res.status(200).json({
                 edit_name: result.name,
                 edit_tags: result.tags,
-                edit_phoneNumber: result.phoneNumber
+                phoneNumber: result.phoneNumber
             })
         })
         .catch(err => {
@@ -86,14 +92,17 @@ exports.edit_contact = (req, res, next) => {
         })
 }
 
-//delete contact
+//delete contact-----------------------------------------------------------
 exports.delete_contact = (req, res, next) => {
     const role = req.userData.role;
     if (role === 'viewer') {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
-    Contacts.findOneAndDelete({ _id: req.params.contactId }, { returnDocument: before }).exec()
+    Contacts.findOneAndDelete({ _id: req.params.contactId }).exec()
         .then(result => {
+            if (result === null) {
+                return res.status(404).json({ message: "No contacts found" });
+            }
             console.log("Contact deleted successfully");
             res.status(200).json({
                 delete_name: result.name,

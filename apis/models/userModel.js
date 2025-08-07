@@ -10,17 +10,9 @@ const userSchema = mongoose.Schema({
     },
     password: { type: String, required: true },
     role: { type: String, required: true, enum: ['editor', 'viewer'] },
-    workspace_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Workspace' },
+    workspace_id: { type: Number, ref: 'Workspace' },
     isAdmin: { type: Boolean, default: false, required: true },
     createdAt: { type: Date, default: new Date().toISOString() }
 });
 
 module.exports = mongoose.model('WorkspaceUser', userSchema)
-
-// {
-//   "username": "Saurabh"
-//   "email": "saurabh@kevit.io",
-//   "password": "saurabh123",
-//   "role": "editor",
-//   "isAdmin": "true"
-// }
