@@ -115,3 +115,26 @@ exports.delete_contact = (req, res, next) => {
             res.status(500).json({ error: err });
         })
 }
+
+//fetch single contact-----------------------------------------------------------
+exports.fetch_single_contact = (req, res, next) => {
+    if (role === 'viewer') {
+        return res.status(401).json({ message: "Unauthorized Access" });
+    }
+    Contacts.findOne({ _id: req.params.contactId }).exec()
+        .then(result => {
+            if (result) {
+                console.log('Contact with specified id fetched');
+                res.status(200).json({
+                    fetched_contact: result
+                })
+            }
+            else {
+                res.status(404).json({ message: "Contact with specified id not found" });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({ error: err });
+        })
+}
