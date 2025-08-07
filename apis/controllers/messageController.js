@@ -64,7 +64,7 @@ exports.edit_message = (req, res, next) => {
     if (role === 'viewer') {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
-    Message.findOneAndUpdate({ _id: req.params.messageId }, { $set: { title: req.body.title, type: req.body.type, content: req.body.content } }, { returnDocument: "after" }).exec()
+    Message.findOneAndUpdate({ _id: req.params.messageId }, { $set: { title: req.body.title, messageType: req.body.messageType, content: req.body.content } }, { returnDocument: "after" }).exec()
         .then(result => {
             if (result === null) {
                 return res.status(404).json({ message: "No message template found" });
@@ -88,7 +88,7 @@ exports.delete_message = (req, res, next) => {
     if (role === 'viewer') {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
-    Contacts.findOneAndDelete({ _id: req.params.messageId }).exec()
+    Message.findOneAndDelete({ _id: req.params.messageId }).exec()
         .then(result => {
             if (result === null) {
                 return res.status(404).json({ message: "No message template found" });

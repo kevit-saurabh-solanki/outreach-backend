@@ -1,18 +1,19 @@
 const messageController = require('../controllers/messageController');
 const express = require('express');
 const router = express.Router();
+const reqAuth = require('../middleware/auth');
 
 //add a message template
-router.post('/', messageController.add_messageTemplate);
+router.post('/', reqAuth, messageController.add_messageTemplate);
 
 //get all message template
-router.get('/', messageController.fetch_all_message);
+router.get('/', reqAuth, messageController.fetch_all_message);
 
 //edit message template
-router.put('/:messageId', messageController.edit_message);
+router.put('/:messageId', reqAuth, messageController.edit_message);
 
 //delete message template
-router.delete('/:messageId', messageController.delete_message);
+router.delete('/:messageId', reqAuth, messageController.delete_message);
 
 
 module.exports = router;

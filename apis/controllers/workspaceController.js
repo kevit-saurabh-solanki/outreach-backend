@@ -1,5 +1,5 @@
 const Workspace = require('../models/workspaceModel');
-const mongoose = require('mongoose');
+
 
 
 //create workspace-------------------------------------------------------------------------
@@ -74,7 +74,7 @@ exports.delete_workspace = (req, res, next) => {
             Workspace.deleteOne({ _id: req.params.workspaceId }).exec()
                 .then(delWork => {
                     console.log('workspace deleted');
-                    res.status(200).json({ deleted_workspace: result.name });
+                    res.status(200).json({ deleted_workspaceId: result._id, deleted_workspace: result.name });
                 })
                 .catch(err => {
                     console.log(err)

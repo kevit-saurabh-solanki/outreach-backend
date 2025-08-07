@@ -69,11 +69,7 @@ exports.add_user = (req, res, next) => {
     }
     WorkspaceUser.findOne({ $and: [{ email: req.body.email }, { workspace_id: req.body.workspace_id }] }).exec()
         .then(result => {
-            if (result) return res.status(409).json({ message: "user with specified mail and workspace id already existed" });
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({ error: err });
+            if (result) { return res.status(409).json({ message: "user with specified mail and workspace id already existed" }) };
         })
     bcrypt.hash(req.body.password, 10, (e, hash) => {
         if (e) {
@@ -111,7 +107,6 @@ exports.add_user = (req, res, next) => {
     })
 
 }
-
 
 //delete user-------------------------------------------------------------------------
 exports.delete_user = (req, res, next) => {
