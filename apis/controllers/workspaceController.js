@@ -83,7 +83,7 @@ exports.edit_workspace = (req, res, next) => {
         return res.status(401).json({ message: "Unauthorized Access" });
     }
 
-    Workspace.findOneAndUpdate({ _id: req.params.workspaceId }, { $set: { name: req.body.name, description: req.body.description } }, { returnDocument: before }).exec()
+    Workspace.findOneAndUpdate({ _id: req.params.workspaceId }, { $set: { name: req.body.name, description: req.body.description } }, { returnDocument: "after" }).exec()
         .then(result => {
             if (result === null) {
                 return res.status(404).json({ message: "No workspace found" });
