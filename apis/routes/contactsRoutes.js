@@ -9,6 +9,9 @@ router.get('/', checkAuth, contactsController.fetch_all_contacts);
 //add contacts
 router.post('/', checkAuth, contactsController.add_contact);
 
+//fetch single contact
+router.post('/:contactId', checkAuth, contactsController.fetch_single_contact);
+
 //edit contacts
 router.put('/:contactId', checkAuth, contactsController.edit_contact);
 

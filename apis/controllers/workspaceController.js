@@ -60,6 +60,30 @@ exports.fetch_all_workspace = (req, res, next) => {
         })
 }
 
+//fetch single workspace id-------------------------------------------------------------------------
+exports.fetch_single_workspace = (req, res, next) => {
+    const admin = req.userData.isAdmin;
+    if (!admin) {
+        return res.status(401).json({ message: "Unauthorized Access" });
+    }
+    Workspace.findOne({ _id: req.params.workspaceId }).exec()
+        .then(result => {
+            if (result) {
+                console.log('Workspace with specified id fetched');
+                res.status(200).json({
+                    fetched_workspaces: result
+                })
+            }
+            else {
+                res.status(404).json({ message: "Workspace with specified id not found" });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({ error: err });
+        })
+}
+
 //delete workspace-------------------------------------------------------------------------
 exports.delete_workspace = (req, res, next) => {
     const admin = req.userData.isAdmin;
