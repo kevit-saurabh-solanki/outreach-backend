@@ -40,17 +40,8 @@ exports.fetch_all_message = (req, res, next) => {
         .then(result => {
             console.log('All messages sent');
             res.status(200).json({
-                Messages: result.map(message => {
-                    return {
-                        message_id: message._id,
-                        message_title: message.title,
-                        message_type: message.type,
-                        message_content: message.content,
-                        message_workspace_id: message.workspace_id,
-                        message_createdBy: message.createdBy
-                    }
-                })
-            });
+                Messages: result
+            })
         })
         .catch(err => {
             console.log(err);
@@ -95,10 +86,7 @@ exports.delete_message = (req, res, next) => {
             }
             console.log("message template deleted successfully");
             res.status(200).json({
-                delete_id: result._id,
-                delete_title: result.title,
-                delete_type: result.type,
-                delete_content: result.content
+                deleted_message: result
             })
         })
         .catch(err => {
